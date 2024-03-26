@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    {% block heading %}
+    <h1>Here are all the tasks:</h1>
+    {% endblock %}
+    
+    <div class="tasks-container">
+        <div class="tasks">
+            {% block content %}
+            <ul>
+                {% for task in tasks %}
+                <li>
+                    <pre>{{ task | tojson(indent=4) }}</pre>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endblock %}
+        </div>
+        <div class="giphy-container">
+            <img src="../static/images/giphy.gif" alt="Giphy Image" class="giphy-image">
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+* {
+    background-color: aqua;
+}
+
+h1 {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.container {
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    height: 80vh;
+}
+
+img {
+    max-width: 100%; 
+    max-height: 100%; 
+    border-radius: 10px;
+}
+
+.tasks-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    margin-top: 20px; 
+}
+
+.tasks {
+    flex: 1; 
+}
+
+.giphy-container {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start; 
+    margin-right: 300px; 
+    margin-bottom: 500px;
+}
+
+
+.task-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    margin-bottom: 400px; 
+}
