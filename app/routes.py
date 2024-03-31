@@ -1,8 +1,9 @@
-from flask import request, render_template
+from flask import request, render_template, jsonify
 from . import app, db
 from tasks import tasks_list
 from datetime import datetime, timezone
 from .models import Task
+
 
 
 @app.route("/")
@@ -20,15 +21,22 @@ def get_tasks():
         print("Generated SQL query:", str(select_stmt))
     tasks = db.session.execute(select_stmt).scalars().all()
     tasks_list = [task.to_dict() for task in tasks]
+    accept_header = request.headers.get('Accept', '')
+    if 'application/json' in accept_header:
+        return jsonify(tasks_list)
     return render_template('tasks.html', tasks=tasks_list)
 
 @app.route("/tasks/<int:id>")
 def get_task(id):
-    tasks = db.session.execute(db.select(Task)).scalars().all()
-    for task in tasks:
-        if task.id == id:
-            return render_template('task.html', task=task)
-    return {'error': f"Task with id {id} does not exist"}, 404
+    task = db.session.query(Task).filter_by(id=id).first()
+    if not task:
+        return {'error': f"Task with id {id} does not exist"}, 404
+    accept_header = request.headers.get('Accept', '')
+    if 'application/json' in accept_header:
+        return jsonify(task.to_dict())
+    else:
+        return render_template('task.html', task=task.to_dict())
+    
 
 @app.route("/tasks", methods=['POST'])
 def create_task():
@@ -50,3 +58,5 @@ def create_task():
 
     new_task = Task(title=title, description=description, completed=completed)
     return new_task.to_dict(), 201
+
+    # return render_template('create_task.html', new_task=new_task.to_dict()) 
