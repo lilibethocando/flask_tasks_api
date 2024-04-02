@@ -1,0 +1,30 @@
+{% extends "tasks.html" %}
+
+{% block heading %}
+<h1>Create Task</h1>
+{% endblock %}
+
+<div class="task-creation">
+    {% block content %}
+    <div class="container">
+        <div class="task">
+            <div class="create-task-form">
+                <form method="POST" action="{{ url_for('create_task') }}">
+                    <input type="text" name="title" placeholder="title">
+                    <input type="text" name="description" placeholder="description">
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <ul>
+                <pre>{{ new_task | tojson(indent=4) }}</pre>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block image %}
+        <div class="create-task-img">
+            <img src="../static/images/task2.gif" alt="Users Image" class="image">
+        </div>
+        {% endblock %}
+</div>

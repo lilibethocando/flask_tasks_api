@@ -1,6 +1,7 @@
 from . import db
 from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import create_access_token
 import base64
 import os
 import secrets
@@ -103,7 +104,8 @@ class User(db.Model):
         self.token_expiration = now + timedelta(hours=1)
         self.save()
         return {"token": self.token, "token_expiration": self.token_expiration}
-    
+
+
 
     def update(self, **kwargs):
         allowed_fields = {'first_name', 'last_name', 'email', 'username', 'password'}
@@ -118,8 +120,6 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
-# task = Task(title='First task', description='Finish the Flask Homework', completed=True)
     
 
 

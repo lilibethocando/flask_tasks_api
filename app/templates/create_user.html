@@ -1,0 +1,33 @@
+{% extends "tasks.html" %}
+
+{% block heading %}
+<h1>Create User</h1>
+{% endblock %}
+
+<div class="user-creation">
+    {% block content %}
+    <div class="container">
+        <div class="user">
+            <div class="user-form">
+                <form method="POST" action="{{ url_for('create_user') }}">
+                    <input type="text" name="firstName" placeholder="firstName">
+                    <input type="text" name="lastName" placeholder="lastName">
+                    <input type="text" name="username" placeholder="username">
+                    <input type="text" name="email" placeholder="email">
+                    <input type="text" name="password" placeholder="password">
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <ul>
+                <pre>{{ new_user | tojson(indent=4) }}</pre>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block image %}
+        <div class="user-img">
+            <img src="../static/images/users_img.avif" alt="Users Image" class="image">
+        </div>
+        {% endblock %}
+</div>

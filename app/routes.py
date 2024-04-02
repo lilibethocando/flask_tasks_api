@@ -1,4 +1,4 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, redirect, url_for
 from . import app, db
 from tasks import tasks_list
 from datetime import datetime, timezone
@@ -27,40 +27,61 @@ def get_tasks():
         return jsonify(tasks_list)
     return render_template('tasks.html', tasks=tasks_list)
 
-@app.route("/tasks/<int:id>")
-def get_task(id):
-    task = db.session.query(Task).filter_by(id=id).first()
-    if not task:
-        return {'error': f"Task with id {id} does not exist"}, 404
-    accept_header = request.headers.get('Accept', '')
-    if 'application/json' in accept_header:
-        return jsonify(task.to_dict())
-    else:
-        return render_template('task.html', task=task.to_dict())
     
 
-@app.route("/tasks", methods=['POST'])
+@app.route("/task", methods=['GET', 'POST'])
+def get_task():    
+    if request.method == 'GET':
+        default_task = {'id': 1, 'title': 'Default Task', 'description': 'This is a default task'}
+        return render_template('task.html', task=default_task)
+    
+    if request.method == 'POST':
+        id = request.form.get('id')
+        task = db.session.query(Task).filter_by(id=id).first()
+
+        if not task:
+            return {'error': f"Task with id {id} does not exist"}, 404
+        
+        accept_header = request.headers.get('Accept', '')
+        if request.is_json:
+            id = request.args.get('id')
+            print(id)
+            return jsonify(task.to_dict())
+        return render_template('task.html', task=task.to_dict(), task_id=id)
+
+
+
+@app.route("/create/tasks", methods=['GET','POST'])
 @token_auth.login_required
 def create_task():
-    if not request.is_json:
-        return {'error': 'Your content-type must be application/json'}, 400
-    required_fields = ['title','description']
-    missing_fields = []
-    data = request.json
-    for field in required_fields:
-        if field not in data:
-            missing_fields.append(field)
-    if missing_fields:
-        return {'error': f"{','.join(missing_fields)} must be in the request body"}, 400
-    
-    title = data.get('title')
-    description = data.get('description')
-    completed = data.get('completed', False)
-    createdAt = datetime.now(timezone.utc)
+    current_user = token_auth.current_user()
+    if id == current_user.id:
 
-    current_user_id = token_auth.current_user()
-    new_task = Task(title=title, description=description, completed=completed, user_id=current_user_id.id)
-    return new_task.to_dict(), 201
+        if request.method == 'GET':
+            new_task = None
+            return render_template('create_task.html', new_task=new_task)
+        if request.method == 'POST':
+
+            required_fields = ['title','description']
+            missing_fields = []
+
+            title = request.form.get('title')
+            description = request.form.get('description')
+            completed = request.form.get('completed', False)
+
+            data = [title, description, completed]
+
+            for field in required_fields:
+                if field not in data:
+                    missing_fields.append(field)
+            if missing_fields:
+                return {'error': f"{','.join(missing_fields)} must be in the request body"}, 400
+            
+            createdAt = datetime.now(timezone.utc)
+
+            current_user_id = token_auth.current_user()
+            new_task = Task(title=title, description=description, completed=completed, user_id=current_user_id.id)
+            return render_template('create_task.html', new_task=new_task.to_dict())
 
 
 @app.route("/tasks/<int:id>", methods=['PUT'])
@@ -105,41 +126,47 @@ def delete_task(id):
 
 #User 
 
-@app.route("/users/", methods=['POST'])
+@app.route("/create/users", methods=['GET','POST'])
 def create_user():
-    if not request.is_json:
-        return {'error': 'Your content-type must be application/json'}, 400
-    data = request.json
-    required_fields = ['firstName', 'lastName', 'username', 'email', 'password']
-    missing_fields = []
-
-    for field in required_fields:
-        if field not in data:
-            missing_fields.append(field)
-
-    if missing_fields:
-        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+    if request.method == 'GET':
+        new_user = None
+        return render_template('create_user.html', new_user=new_user)
     
-    first_name = data.get('firstName')
-    last_name = data.get('lastName')
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    if request.method == 'POST':
+        # if not request.is_json:
+        #     return {'error': 'Your content-type must be application/json'}, 400
+        first_name = request.form.get('firstName')
+        last_name = request.form.get('lastName')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    check_users = db.session.execute(db.select(User).where( (User.username == username) | (User.email == email) )).scalars().all()
-    if check_users:
-        return {'error': "A user with that username and/or email already exists"}, 400
+        # Check for missing fields
+        required_fields = ['firstName', 'lastName', 'username', 'email', 'password']
+        missing_fields = [field for field in required_fields if not request.form.get(field)]
+        
+
+        if missing_fields:
+            return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+        
+        # Check if the username or email already exists
+        check_users = db.session.execute(db.select(User).where((User.username == username) | (User.email == email))).scalars().all()
+        if check_users:
+            return {'error': "A user with that username and/or email already exists"}, 400
+        
+        # Create a new user object
+        new_user = User(first_name=first_name, last_name=last_name,  username=username, email=email, password=password)
+
+        return render_template('create_user.html', new_user=new_user.to_dict())
     
-    new_user = User(first_name=first_name, last_name=last_name,  username=username, email=email, password=password)
 
-    return new_user.to_dict(), 201
 
 
 @app.route('/token')
 @basic_auth.login_required()
 def get_token():
     user = basic_auth.current_user()
-    return user.get_token()
+    return render_template('token.html', user=user.get_token())   
 
 
 @app.route('/users/<int:user_id>')

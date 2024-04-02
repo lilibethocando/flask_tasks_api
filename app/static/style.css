@@ -11,12 +11,12 @@ h1 {
     display: flex; 
     justify-content: center;
     align-items: center; 
-    height: 80vh;
+    height: 30vh;
 }
 
 img {
-    max-width: 100%; 
-    max-height: 100%; 
+    max-width: 50%; 
+    max-height: 50%; 
     border-radius: 10px;
 }
 
@@ -45,4 +45,39 @@ img {
     justify-content: space-between;
     align-items: center; 
     margin-bottom: 400px; 
+}
+
+.unique_task {
+    display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items:center;
+        margin-bottom: 800px;
+}
+
+.token-img {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-end; 
+    max-width: 100%; 
+    border-radius: 10px;
+    padding-bottom: 40px;
+}
+
+.user-img {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-end; 
+    max-width: 100%; 
+    border-radius: 10px;
+    padding-bottom: 40px;
+}
+
+.create-task-img {
+    display: flex;
+    justify-content: center; 
+    align-items: flex-end; 
+    max-width: 100%; 
+    border-radius: 10px;
+    padding-bottom: 40px;
 }

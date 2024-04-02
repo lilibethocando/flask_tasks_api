@@ -1,0 +1,26 @@
+{% extends "tasks.html" %}
+
+{% block heading %}
+<h1>Get Token</h1>
+{% endblock %}
+
+<div class="token">
+    {% block content %}
+    <div class="container">
+        <h3>Here is your token:</h3>
+
+        <div class="token">
+            <ul>
+                <pre>{{ user | tojson(indent=4) }}</pre>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block image %}
+        <div class="token-img">
+            <img src="../static/images/token_img.webp" alt="Giphy Image" class="giphy-image">
+        </div>
+        {% endblock %}
+</div>
