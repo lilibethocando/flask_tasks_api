@@ -1,4 +1,4 @@
-from flask import request, render_template, jsonify, redirect, url_for
+from flask import request, render_template, jsonify, redirect, url_for, session
 from . import app, db
 from tasks import tasks_list
 from datetime import datetime, timezone
@@ -52,36 +52,30 @@ def get_task():
 
 
 @app.route("/create/tasks", methods=['GET','POST'])
-@token_auth.login_required
+# @token_auth.login_required
 def create_task():
     current_user = token_auth.current_user()
-    if id == current_user.id:
 
-        if request.method == 'GET':
-            new_task = None
-            return render_template('create_task.html', new_task=new_task)
-        if request.method == 'POST':
+    if request.method == 'GET':
+        new_task = None
+        return render_template('create_task.html', new_task=new_task)
+    if request.method == 'POST':
 
-            required_fields = ['title','description']
-            missing_fields = []
+        title = request.form.get('title')
+        description = request.form.get('description')
+        completed = request.form.get('completed', False)
 
-            title = request.form.get('title')
-            description = request.form.get('description')
-            completed = request.form.get('completed', False)
+        required_fields = ['title','description']
+        missing_fields = [field for field in required_fields if not request.form.get(field)]
 
-            data = [title, description, completed]
+        if missing_fields:
+            return {'error': f"{','.join(missing_fields)} must be in the request body"}, 400
+        
+        current_user_id = token_auth.current_user()
 
-            for field in required_fields:
-                if field not in data:
-                    missing_fields.append(field)
-            if missing_fields:
-                return {'error': f"{','.join(missing_fields)} must be in the request body"}, 400
-            
-            createdAt = datetime.now(timezone.utc)
+        new_task = Task(title=title, description=description, completed=completed, user_id=1)
 
-            current_user_id = token_auth.current_user()
-            new_task = Task(title=title, description=description, completed=completed, user_id=current_user_id.id)
-            return render_template('create_task.html', new_task=new_task.to_dict())
+        return render_template('create_task.html', new_task=new_task.to_dict())
 
 
 @app.route("/tasks/<int:id>", methods=['PUT'])
@@ -121,8 +115,6 @@ def delete_task(id):
     return {'success': f"{task.title} was successfully deleted"}, 200
 
 
-
-    # return render_template('create_task.html', new_task=new_task.to_dict()) 
 
 #User 
 
