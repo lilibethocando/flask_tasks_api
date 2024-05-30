@@ -1,5 +1,7 @@
 # Task Manager App 📋
 
+[Visit the Website](https://flask-tasks-apis.onrender.com/)
+
 Welcome to the Task Manager App! This Flask-based web application allows users to create, retrieve tasks,
 create users, and generate tokens. The tasks are stored in a PostgreSQL database managed by ElephantSQL. The app is deployed on Render.com.
 
@@ -19,25 +21,12 @@ create users, and generate tokens. The tasks are stored in a PostgreSQL database
 - ElephantSQL: Hosted PostgreSQL service used for database management.
 - Render.com: Cloud platform for hosting and deploying web applications.
 
-## Deployment
-
-The app is deployed on Render.com. You can access it [here](https://flask-tasks-apis.onrender.com/).
-
-## Getting Started
-
-To run the app locally, follow these steps:
-
-1. Clone this repository to your local machine.
-2. Install the necessary dependencies by running `pip install -r requirements.txt`.
-3. Set up your PostgreSQL database either locally or using a service like ElephantSQL.
-4. Update the database connection URL in the Flask app configuration.
-5. Run the Flask application using `python app.py`.
-6. Access the app in your web browser at `http://localhost:5000`.
-
 ## Usage
 
 - Navigate to the respective routes for creating tasks, retrieving tasks, creating users, and generating tokens.
 - Follow the on-screen instructions to interact with the app's features.
+
+![Project Screenshot](task_management.png)
 
 ## Contributing
 
